@@ -12,6 +12,12 @@ class ChildFieldFilter(filters.FilterSet):
         abstract = True
         fields = ["child"]
 
+    @property
+    def qs(self):
+        children = super().qs
+        user = getattr(self.request, 'user', None)
+        return children.care
+
 
 class TagsFieldFilter(filters.FilterSet):
     tags = CharInFilter(

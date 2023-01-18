@@ -10,6 +10,7 @@ from taggit.forms import TagField
 from core import models
 from core.widgets import TagsEditor, ChildRadioSelect
 
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 def set_initial_values(kwargs, form_type):
     """
@@ -93,7 +94,7 @@ class CoreModelForm(forms.ModelForm):
 class ChildForm(forms.ModelForm):
     class Meta:
         model = models.Child
-        fields = ["first_name", "last_name", "birth_date"]
+        fields = ["first_name", "last_name", "birth_date", "care_givers"]
         if settings.BABY_BUDDY["ALLOW_UPLOADS"]:
             fields.append("picture")
         widgets = {
@@ -103,8 +104,13 @@ class ChildForm(forms.ModelForm):
                     "data-target": "#datetimepicker_date",
                 }
             ),
+            "care_givers": FilteredSelectMultiple("Care Givers", False)
         }
 
+    class Media:
+        extend = True
+        #css = {'all': ('admin/css/widgets.css',)}
+        js = ('/jsi18n',)
 
 class ChildDeleteForm(forms.ModelForm):
     confirm_name = forms.CharField(max_length=511)

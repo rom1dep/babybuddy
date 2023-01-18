@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.urls import path
-
+from django.views.i18n import JavaScriptCatalog
 from . import views
 
 app_name = "core"
@@ -123,4 +123,5 @@ urlpatterns = [
     path("bmi/add/", views.BMIAdd.as_view(), name="bmi-add"),
     path("bmi/<int:pk>/", views.BMIUpdate.as_view(), name="bmi-update"),
     path("bmi/<int:pk>/delete/", views.BMIDelete.as_view(), name="bmi-delete"),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]

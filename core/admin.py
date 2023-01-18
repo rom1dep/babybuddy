@@ -6,7 +6,7 @@ from import_export import fields, resources
 from import_export.admin import ImportExportMixin, ExportActionMixin
 
 from core import models
-from core.forms import TagAdminForm
+from core.forms import TagAdminForm, ChildForm
 
 
 class ImportExportResourceBase(resources.ModelResource):
@@ -52,7 +52,8 @@ class ChildAdmin(ImportExportMixin, ExportActionMixin, admin.ModelAdmin):
     list_display = ("first_name", "last_name", "birth_date", "slug")
     list_filter = ("last_name",)
     search_fields = ("first_name", "last_name", "birth_date")
-    fields = ["first_name", "last_name", "birth_date"]
+    fields = ["first_name", "last_name", "birth_date", "care_givers"]
+    filter_horizontal = ("care_givers",)
     if settings.BABY_BUDDY["ALLOW_UPLOADS"]:
         fields.append("picture")
     resource_class = ChildImportExportResource

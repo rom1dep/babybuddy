@@ -73,6 +73,7 @@ class CoreDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
 
 class BMIList(PermissionRequiredMixin, BabyBuddyFilterView):
     model = models.BMI
+    # queryset = models.BMI.objects.first()
     template_name = "core/bmi_list.html"
     permission_required = ("core.view_bmi",)
     paginate_by = 10
@@ -155,6 +156,7 @@ class DiaperChangeList(PermissionRequiredMixin, BabyBuddyFilterView):
     permission_required = ("core.view_diaperchange",)
     paginate_by = 10
     filterset_class = filters.DiaperChangeFilter
+    # form.d
 
 
 class DiaperChangeAdd(CoreAddView):

@@ -15,6 +15,7 @@ from taggit.models import GenericTaggedItemBase, TagBase
 
 from core.utils import random_color
 
+from django.contrib.auth.models import User
 
 def validate_date(date, field_name):
     """
@@ -165,6 +166,7 @@ class Child(models.Model):
         blank=True, max_length=255, verbose_name=_("Last name")
     )
     birth_date = models.DateField(blank=False, null=False, verbose_name=_("Birth date"))
+    care_givers = models.ManyToManyField(User)
     slug = models.SlugField(
         allow_unicode=True,
         blank=False,

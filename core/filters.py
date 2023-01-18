@@ -2,9 +2,21 @@
 from django.utils.translation import gettext as _
 
 import django_filters
+from django.contrib.auth.models import User
 
 from core import models
 
+class ChildFieldFilter(django_filters.FilterSet):
+    class Meta:
+        model = models.Child
+        fields = ["first_name"]
+
+    @property
+    def qs(self):
+        children = super().qs
+        user = getattr(self.request, 'user', None)
+        # User.objects.filter()
+        return models.Child.objects.filter(care_givers__username = user)
 
 class TagFilter(django_filters.FilterSet):
     tag = django_filters.ModelChoiceFilter(
@@ -15,7 +27,7 @@ class TagFilter(django_filters.FilterSet):
     )
 
 
-class BMIFilter(TagFilter):
+class BMIFilter(TagFilter, ChildFieldFilter):
     class Meta:
         model = models.BMI
         fields = ["child"]
