@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "babybuddy",
     "core",
     "dashboard",
+    "django_altair",
     "reports",
     "axes",
     "django_filters",

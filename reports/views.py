@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import altair as alt
 from django.views.generic.detail import DetailView
+from django_pandas.io import read_frame
 
 from babybuddy.mixins import PermissionRequiredMixin
 from core import models
@@ -110,7 +112,12 @@ class FeedingAmountsChildReport(PermissionRequiredMixin, DetailView):
         child = context["object"]
         instances = models.Feeding.objects.filter(child=child)
         if instances:
-            context["html"], context["js"] = graphs.feeding_amounts(instances)
+            df = read_frame(instances.all(), fieldnames=['start', 'amount', 'method'])
+            context['chart'] = alt.Chart(df).mark_bar().encode(
+                x='start',
+                y='amount',
+                color='method'
+            ).properties(width=1000).interactive()
         return context
 
 

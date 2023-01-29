@@ -1,5 +1,6 @@
 {% extends 'reports/base.html' %}
 {% load i18n static %}
+{% load django_altair %}
 
 {% block title %}{% endblock %}
 
@@ -9,8 +10,8 @@
 
 {% block content %}
     <div class="container-fluid">
-        {% if html %}
-            {{ html|safe }}
+        {% if chart %}
+            {% render_chart chart %}
         {% else %}
             <div class="jumbotron text-center">
                 <i class="icon-sad" aria-hidden="true"></i>
@@ -19,10 +20,4 @@
             </div>
         {% endif %}
     </div>
-{% endblock %}
-
-{% block javascript %}
-    <script src="{% static "babybuddy/js/graph.js" %}"></script>
-    <script>Plotly.setPlotConfig({locale: '{{ LOCALE }}'})</script>
-    {{ js|safe }}
 {% endblock %}
