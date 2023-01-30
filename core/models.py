@@ -165,6 +165,7 @@ class Child(models.Model):
         blank=True, max_length=255, verbose_name=_("Last name")
     )
     birth_date = models.DateField(blank=False, null=False, verbose_name=_("Birth date"))
+    feeding_target = models.PositiveIntegerField(null=True, verbose_name=_("Daily feeding target"))
     slug = models.SlugField(
         allow_unicode=True,
         blank=False,

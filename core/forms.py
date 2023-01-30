@@ -93,7 +93,7 @@ class CoreModelForm(forms.ModelForm):
 class ChildForm(forms.ModelForm):
     class Meta:
         model = models.Child
-        fields = ["first_name", "last_name", "birth_date"]
+        fields = ["first_name", "last_name", "feeding_target", "birth_date"]
         if settings.BABY_BUDDY["ALLOW_UPLOADS"]:
             fields.append("picture")
         widgets = {
