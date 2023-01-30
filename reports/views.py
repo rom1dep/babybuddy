@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta, date
+
 import altair as alt
+import pandas as pd
+from django.db.models.aggregates import Sum
+from django.db.models.expressions import Window
 from django.views.generic.detail import DetailView
 from django_pandas.io import read_frame
 
 from babybuddy.mixins import PermissionRequiredMixin
 from core import models
-
 from . import graphs
 
 
@@ -141,6 +145,55 @@ class FeedingDurationChildReport(PermissionRequiredMixin, DetailView):
         instances = models.Feeding.objects.filter(child=child)
         if instances:
             context["html"], context["js"] = graphs.feeding_duration(instances)
+        return context
+
+
+class FeedingTrendChildReport(PermissionRequiredMixin, DetailView):
+    """
+    Graph of feedings over time with target goal.
+    """
+
+    model = models.Child
+    permission_required = ("core.view_child",)
+    template_name = "reports/feeding_trend.html"
+
+    def __init__(self):
+        super(FeedingTrendChildReport, self).__init__()
+        self.html = ""
+        self.js = ""
+
+    def get_context_data(self, **kwargs):
+        context = super(FeedingTrendChildReport, self).get_context_data(**kwargs)
+        child = context["object"]
+        instances = models.Feeding.objects \
+            .filter(child=child, start__date=date.today()) \
+            .annotate(served_amount=Window(
+                expression=Sum("amount"),
+                order_by="start"
+            ))
+
+        if instances:
+            df = read_frame(instances.all(), fieldnames=['start', 'amount', 'type', 'served_amount'])
+            bar = alt.Chart(df).mark_bar().encode(
+                alt.X('start', title="Feeding Time"),
+                y='amount',
+                color='type'
+            )
+            bar_labels = bar.mark_text(dy=-5).encode(text='amount')
+            line = alt.Chart(df).mark_line(color='green').encode(
+                x='start',
+                y='served_amount'
+            )
+            line_labels = line.mark_text(dy=-5).encode(text='served_amount')
+            goal = alt.Chart(pd.DataFrame({
+                'start': [datetime.combine(date.today(), datetime.min.time()),
+                          datetime.combine(date.today(), datetime.max.time())],
+                'goal': [0, child.feeding_target]
+            })).mark_line(color='salmon', clip=True).encode(
+                x='start',
+                y='goal'
+            )
+            context["chart"] = (bar + bar_labels + line + line_labels + goal).interactive()
         return context
 
 
